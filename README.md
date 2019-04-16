@@ -24,7 +24,7 @@ DB_PORT=3306
 DB_DATABASE=root
 DB_USERNAME=adino
 DB_PASSWORD=adino
-
+if error 3306 sudo service mysql stop
 Install docker when not found docker in this pc.
 
 ```sh

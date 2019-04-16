@@ -10,10 +10,14 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+// Auth::routes(['verify' => true]);
 
 Route::get('/', function () {	
     return view('welcome');
 });
+
 Route::get('/testing', function () {
 	return "hello world";
 });
+
+Route::resource('user', 'UserController');
