@@ -9,7 +9,7 @@ Install the dependencies and devDependencies and start the server.
 $ git clone https://github.com/AdinoWayne/laravel_api.git
 $ cd laravel_api
 $ docker run --rm -v $(pwd):/app composer install
-$ sudo chown -R $USER:$USER ~/laravel-app
+$ sudo chown -R $USER:$USER /laravel-api
 $ cp .env.example .env
 $ docker-compose up -d
 $ docker-compose exec app vim .env
@@ -23,7 +23,7 @@ DB_HOST=db
 DB_PORT=3306
 DB_DATABASE=root
 DB_USERNAME=adino
-DB_PASSWORD=adino
+DB_PASSWORD=123456
 
 Install docker when not found docker in this pc.
 
