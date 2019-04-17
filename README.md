@@ -57,13 +57,13 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 ## 1.3 [OPTIONAL] Install docker-cleanup command
 
-```
+```sh
 cd /tmp
 git clone https://gist.github.com/76b450a0c986e576e98b.git
 cd 76b450a0c986e576e98b
 sudo mv docker-cleanup /usr/local/bin/docker-cleanup
 sudo chmod +x /usr/local/bin/docker-cleanup
-
+```
 1. Clear Application Cache.
 
 Run the following command to clear application cache of the Laravel application.
