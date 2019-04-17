@@ -1,5 +1,5 @@
 {!! Form::open(['method' => 'POST', 'url' => 'user']) !!}
-{!! Form::text('username') !!}
+{!! Form::text('name') !!}
 {!! Form::text('email') !!}
 {!! Form::text('user_type_id') !!}
 {!! Form::password('password') !!}

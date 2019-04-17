@@ -19,5 +19,6 @@ Route::get('/', function () {
 Route::get('/testing', function () {
 	return "hello world";
 });
-
-Route::resource('user', 'UserController');
+Route::group(['prefix' => 'api/v1','middleware'=>'api'], function() {
+    Route::resource('user', 'UserController');
+});

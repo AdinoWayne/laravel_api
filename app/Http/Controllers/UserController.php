@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -13,7 +15,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        return "this is user api";
+       $output =  User::orderBy('id','DESC')->get();
+       return $output;
     }
 
     /**
@@ -34,9 +37,30 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $a = var_dump($request->all());
-        // return view('users.test',['pro'=>$a]);
-        return $a;
+        $input  = $request->all();
+
+        $this->validate($request,
+        [
+            'name' => 'required|min:3|max:100'
+        ],[
+            'name.required' => 'Field empty',
+            'name.min' => 'Field so short',
+            'name.max' => 'Field so long'
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            User::create($input);
+        } catch(\Throwable $e) {
+            DB::rollback();
+            throw $e;
+        }
+        DB::commit();
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 
     /**
@@ -47,7 +71,8 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        $output = User::find($id);
+        return $output;
     }
 
     /**
@@ -58,7 +83,7 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('users.profile');
     }
 
     /**
