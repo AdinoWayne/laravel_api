@@ -64,7 +64,30 @@ cd 76b450a0c986e576e98b
 sudo mv docker-cleanup /usr/local/bin/docker-cleanup
 sudo chmod +x /usr/local/bin/docker-cleanup
 
+1. Clear Application Cache.
 
+Run the following command to clear application cache of the Laravel application.
+```sh
+php artisan cache:clear
+```
+2. Clear route cache.
+
+To clear route cache of your Laravel application execute the following command from the shell.
+```sh
+php artisan route:cache 
+```
+3. Clear config cache.
+
+You can use config:cache to clear the config cache of the Laravel application.
+```sh
+php artisan config:cache  
+```
+4. Clear compiled view files.
+
+Also, you may need to clear compiled view files of your Laravel application. To clear compiled view files run the following command from the terminal.
+```sh
+php artisan view:clear 
+```
 
 
   
