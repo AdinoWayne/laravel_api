@@ -6,9 +6,6 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function __construct() {
-        $this->beforeFilter('csrf', ['on' => '']);
-    }
     /**
      * Display a listing of the resource.
      *
@@ -26,7 +23,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('users.profile');
     }
 
     /**
@@ -37,7 +34,9 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        return var_dump($request->name);
+        $a = var_dump($request->all());
+        // return view('users.test',['pro'=>$a]);
+        return $a;
     }
 
     /**
