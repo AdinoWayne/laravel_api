@@ -51,16 +51,14 @@ class UserController extends Controller
         DB::beginTransaction();
 
         try {
-            User::create($input);
+            $output = User::create($input);
         } catch(\Throwable $e) {
             DB::rollback();
             throw $e;
         }
         DB::commit();
 
-        return response()->json([
-            'success' => true
-        ]);
+        return response()->json($output, 201);
     }
 
     /**
@@ -95,7 +93,28 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $input  = $request->all();
+
+        $this->validate($request,
+        [
+            'name' => 'required|min:3|max:100'
+        ],[
+            'name.required' => 'Field empty',
+            'name.min' => 'Field so short',
+            'name.max' => 'Field so long'
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $output = User::where('id',$id)->update($input);
+        } catch(\Throwable $e) {
+            DB::rollback();
+            throw $e;
+        }
+        DB::commit();
+
+        return response()->json($output, 200);
     }
 
     /**
@@ -106,6 +125,18 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        DB::beginTransaction();
+
+        try {
+
+            $output = User::where('id',$id)->delete();
+            
+        } catch(\Throwable $e) {
+            DB::rollback();
+            throw $e;
+        }
+        DB::commit();
+
+        return response()->json($output, 204);
     }
 }
