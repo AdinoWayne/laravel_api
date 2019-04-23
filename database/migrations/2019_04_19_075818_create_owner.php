@@ -13,8 +13,8 @@ class CreateOwner extends Migration
      */
     public function up()
     {
-        Schema::create('Owner', function (Blueprint $table) {
-            $table->string('id');
+        Schema::create('owner', function (Blueprint $table) {
+            $table->string('id')->primary();
             $table->string('owner_id');
             $table->string('name');
             $table->string('person_name');
@@ -22,7 +22,7 @@ class CreateOwner extends Migration
             $table->string('email');
             $table->string('tel');
             $table->string('url');
-            $table->string('note')->nullable();
+            $table->json('note')->nullable();
             $table->string('pass');
             $table->timestamps();
         });

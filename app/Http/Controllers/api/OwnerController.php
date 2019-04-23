@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api;
 
-use App\User;
+use App\Models\Owner;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
-class UserController extends Controller
+class OwnerController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +16,8 @@ class UserController extends Controller
      */
     public function index()
     {
-       $output =  User::orderBy('id','DESC')->get();
-       return $output;
+        $output = Owner::orderBy('id','DESC')->get();
+        return $output;
     }
 
     /**
@@ -26,7 +27,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('users.profile');
+        //
     }
 
     /**
@@ -38,20 +39,22 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $input  = $request->all();
-
-        $this->validate($request,
-        [
-            'name' => 'required|min:3|max:100'
+        var_dump($input);
+        $this->validate($request, [
+            'id' => 'required|min:3|max:100'
         ],[
-            'name.required' => 'Field empty',
-            'name.min' => 'Field so short',
-            'name.max' => 'Field so long'
+            'id.required' => 'Field empty',
+            'id.min' => 'Field so short',
+            'id.max' => 'Field so long'
         ]);
 
         DB::beginTransaction();
-
         try {
-            $output = User::create($input);
+            if (isset($input['note'])) {
+                $input['note'] = json_encode($input['note']);
+            }
+            $input['pass'] = bcrypt($input['pass']);
+            $output = Owner::create($input);
         } catch(\Throwable $e) {
             DB::rollback();
             return response()->json(['server busy'], 400);
@@ -69,7 +72,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $output = User::find($id);
+        $output = Owner::find($id);
         return $output;
     }
 
@@ -81,7 +84,7 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        return view('users.profile');
+        //
     }
 
     /**
@@ -97,20 +100,19 @@ class UserController extends Controller
 
         $this->validate($request,
         [
-            'name' => 'required|min:3|max:100'
+            'id' => 'required|min:3|max:100'
         ],[
-            'name.required' => 'Field empty',
-            'name.min' => 'Field so short',
-            'name.max' => 'Field so long'
+            'id.required' => 'Field empty',
+            'id.min' => 'Field so short',
+            'id.max' => 'Field so long'
         ]);
-
+        
         DB::beginTransaction();
-
         try {
-            $output = User::where('id',$id)->update($input);
+            $output = Owner::where('id',$id)->update($input);
         } catch(\Throwable $e) {
             DB::rollback();
-            throw $e;
+            return response()->json(['server busy'], 400);
         }
         DB::commit();
 
@@ -129,11 +131,11 @@ class UserController extends Controller
 
         try {
 
-            $output = User::where('id',$id)->delete();
+            $output = Owner::where('id',$id)->delete();
             
         } catch(\Throwable $e) {
             DB::rollback();
-            throw $e;
+            return response()->json(['server busy'], 400);
         }
         DB::commit();
 

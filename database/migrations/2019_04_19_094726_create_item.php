@@ -13,8 +13,8 @@ class CreateItem extends Migration
      */
     public function up()
     {
-        Schema::create('Items', function (Blueprint $table) {
-            $table->string('id');
+        Schema::create('items', function (Blueprint $table) {
+            $table->string('id')->primary();
             $table->string('owner_id');
             $table->string('name');
             $table->string('title');
@@ -28,7 +28,7 @@ class CreateItem extends Migration
             $table->text('reason');
             $table->text('qualifications');
             $table->text('welfare');
-            $table->text('note')->nullable();
+            $table->json('note')->nullable();
             $table->string('images');
             $table->boolean('is_active');
             $table->boolean('is_delete');

@@ -13,8 +13,8 @@ class CreateUserLog extends Migration
      */
     public function up()
     {
-        Schema::create('User_Log', function (Blueprint $table) {
-            $table->Integer('id');
+        Schema::create('user_log', function (Blueprint $table) {
+            $table->Integer('id')->primary();
             $table->dateTime('last_login_date');
             $table->dateTime('last_job_apply_date');
         });

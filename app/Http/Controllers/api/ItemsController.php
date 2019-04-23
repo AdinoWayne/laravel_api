@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api;
 
-use App\User;
+use App\Models\Items;
 use Illuminate\Http\Request;
+use App\Http\Controllers\api\BaseController;
 use Illuminate\Support\Facades\DB;
 
-class UserController extends Controller
+class ItemsController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +16,8 @@ class UserController extends Controller
      */
     public function index()
     {
-       $output =  User::orderBy('id','DESC')->get();
-       return $output;
+        $output = Items::where('is_delete', false)->orderBy('id','DESC')->get();
+        return $this->sendResponse($output, 'items retrieved successfully');
     }
 
     /**
@@ -26,7 +27,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('users.profile');
+        //
     }
 
     /**
@@ -38,27 +39,26 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $input  = $request->all();
-
-        $this->validate($request,
-        [
-            'name' => 'required|min:3|max:100'
+        $this->validate($request, [
+            'id' => 'required|min:3|max:100'
         ],[
-            'name.required' => 'Field empty',
-            'name.min' => 'Field so short',
-            'name.max' => 'Field so long'
+            'id.required' => 'Field empty',
+            'id.min' => 'Field so short',
+            'id.max' => 'Field so long'
         ]);
-
         DB::beginTransaction();
-
         try {
-            $output = User::create($input);
+            if (isset($input['note'])) {
+                $input['note'] = json_encode($input['note']);
+            }
+            $output = Items::create($input);
         } catch(\Throwable $e) {
             DB::rollback();
-            return response()->json(['server busy'], 400);
+            return $this->sendError('server busy', null);
         }
         DB::commit();
 
-        return response()->json($output, 201);
+        return $this->sendResponse($output, 'items created successfully.');
     }
 
     /**
@@ -69,8 +69,8 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $output = User::find($id);
-        return $output;
+        $output = Items::where('is_delete', false)->find($id);
+        return $this->sendResponse($output, 'items retrieved successfully');
     }
 
     /**
@@ -81,7 +81,7 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        return view('users.profile');
+        //
     }
 
     /**
@@ -97,24 +97,23 @@ class UserController extends Controller
 
         $this->validate($request,
         [
-            'name' => 'required|min:3|max:100'
+            'id' => 'required|min:3|max:100'
         ],[
-            'name.required' => 'Field empty',
-            'name.min' => 'Field so short',
-            'name.max' => 'Field so long'
+            'id.required' => 'Field empty',
+            'id.min' => 'Field so short',
+            'id.max' => 'Field so long'
         ]);
-
+        
         DB::beginTransaction();
-
         try {
-            $output = User::where('id',$id)->update($input);
+            $output = Items::where('id',$id)->update($input);
         } catch(\Throwable $e) {
             DB::rollback();
-            throw $e;
+            return $this->sendError('server busy', null);
         }
         DB::commit();
 
-        return response()->json($output, 200);
+        return $this->sendResponse($output, 'items updated successfully.');
     }
 
     /**
@@ -128,15 +127,13 @@ class UserController extends Controller
         DB::beginTransaction();
 
         try {
-
-            $output = User::where('id',$id)->delete();
-            
+            $output = Items::where('id', $id)->update(array('is_delete' => true));
         } catch(\Throwable $e) {
             DB::rollback();
-            throw $e;
+            return $this->sendError('server busy', null);
         }
         DB::commit();
 
-        return response()->json($output, 204);
+        return $this->sendResponse($output, 'items deleted successfully.');
     }
 }
