@@ -48,7 +48,7 @@ return [
         ],
         
         'owner' => [
-            'driver' => 'passport',
+            'driver' => 'jwt',
             'provider' => 'owner',
         ]
     ],
@@ -104,6 +104,11 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+        'owner' => [
+            'provider' => 'owner',
             'table' => 'password_resets',
             'expire' => 60,
         ],

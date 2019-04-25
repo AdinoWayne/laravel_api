@@ -5,23 +5,35 @@ namespace App\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Passport\HasApiTokens;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class Owner extends Authenticatable
+class Owner extends Authenticatable implements JWTSubject
 {
-    use Notifiable, HasApiTokens;
+    use Notifiable;
 
     protected $table = 'owner';
 
+    protected $guard = 'owner';
+
     protected $fillable = [
-        'id', 'owner_id', 'name', 'person_name', 'add_text', 'email', 'tel', 'url', 'note', 'pass'
+        'id', 'owner_id', 'name', 'person_name', 'add_text', 'email', 'tel', 'url', 'note', 'password'
     ];
 
     protected $hidden = [
-        'pass'
+        'password'
     ];
 
     public function Items() {
         return $this->hasOne('App\Models\Items');
     }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+    
 }

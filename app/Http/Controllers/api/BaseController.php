@@ -24,7 +24,6 @@ class BaseController extends Controller
         return response()->json($response, 200);
     }
 
-
     /**
      * return error response.
      *

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Owner;
 
 class RegisterController extends Controller
@@ -26,10 +27,10 @@ class RegisterController extends Controller
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|confirmed'
         ]);
-        $user = new User([
+        $user = new Owner([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => sha1($request->password)
+            'password' => bcrypt($request->password)
         ]);
         $user->save();
         return response()->json([
@@ -54,15 +55,17 @@ class RegisterController extends Controller
             'password' => 'required|string',
             'remember_me' => 'boolean'
         ]);
-        
+        $user = Owner::where('email', $request->email)->first();
         $credentials = request(['email', 'password']);
-        if(!Auth::attempt($credentials))
+        // if(!Hash::check($request->password, $user->password))
+        //     return response()->json([
+        //         'message' => 'Unauthorized'
+        //     ], 401);
+        if(!Auth::guard('owner')->attempt($credentials))
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
-
-        $user = $request->user();
-        $tokenResult = $user->createToken('Personal Access Token');
+        $tokenResult = $user->createToken('wPVULEqfckola4xefICKKcSD37yMewLUqAzIUitc');
         $token = $tokenResult->token;
         if ($request->remember_me)
             $token->expires_at = Carbon::now()->addWeeks(1);

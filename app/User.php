@@ -19,7 +19,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'user_type_id', 'date_of_birth', 'gender', 'is_active', 'contact_number'
+        'name', 'email', 'password', 'user_type_id', 'date_of_birth', 'gender', 'is_active', 'is_delete', 'contact_number'
     ];
 
     /**
@@ -42,9 +42,5 @@ class User extends Authenticatable
 
     public function user_log() {
         return $this->hasOne('App\User_Log');
-    }
-    
-    public function user_type() {
-        return $this->belongsTo('App\User_Log');
     }
 }

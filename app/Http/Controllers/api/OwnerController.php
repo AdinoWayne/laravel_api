@@ -6,9 +6,20 @@ use App\Models\Owner;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use JWTAuth;
+use Hash;
+use Config;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class OwnerController extends Controller
 {
+
+    function __construct()
+    {
+        Config::set('jwt.user', Owner::class);
+        Config::set('auth.defaults', ['guard' => 'owner', 'passwords' => 'users']);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +27,7 @@ class OwnerController extends Controller
      */
     public function index()
     {
-        $output = Owner::orderBy('id','DESC')->get();
+        $output = Owner::where('is_delete', false)->orderBy('id','DESC')->get();
         return $output;
     }
 
@@ -39,7 +50,6 @@ class OwnerController extends Controller
     public function store(Request $request)
     {
         $input  = $request->all();
-        var_dump($input);
         $this->validate($request, [
             'id' => 'required|min:3|max:100'
         ],[
@@ -53,7 +63,7 @@ class OwnerController extends Controller
             if (isset($input['note'])) {
                 $input['note'] = json_encode($input['note']);
             }
-            $input['pass'] = bcrypt($input['pass']);
+            $input['pass'] = Hash::make($input['pass']);
             $output = Owner::create($input);
         } catch(\Throwable $e) {
             DB::rollback();
@@ -72,7 +82,7 @@ class OwnerController extends Controller
      */
     public function show($id)
     {
-        $output = Owner::find($id);
+        $output = Owner::where('is_delete', false)->find($id);
         return $output;
     }
 
@@ -131,7 +141,7 @@ class OwnerController extends Controller
 
         try {
 
-            $output = Owner::where('id',$id)->delete();
+            $output = Items::where('id', $id)->update(array('is_delete' => true));
             
         } catch(\Throwable $e) {
             DB::rollback();
@@ -141,4 +151,64 @@ class OwnerController extends Controller
 
         return response()->json($output, 204);
     }
+
+    public function authenticate(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        try {
+            if (! $token = JWTAuth::attempt($credentials)) {
+                return response()->json(['error' => 'invalid_credentials'], 400);
+            }
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'could_not_create_token'], 500);
+        }
+
+        return response()->json(compact('token'));
+    }
+
+    public function register(Request $request)
+    {
+        $input  = $request->all();
+        $this->validate($request, [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:owner',
+            'password' => 'required|string|min:6',
+            'password_confirmation' => 'required|string|min:6|same:password',
+        ]);
+
+        if (isset($input['note'])) {
+            $input['note'] = json_encode($input['note']);
+        }
+        DB::beginTransaction();
+        try {
+            $input['password'] = Hash::make($input['password']);
+            unset($input['password_confirmation']);
+            $user = Owner::create($input);
+            $token = JWTAuth::fromUser($user);
+
+        } catch(\Throwable $e) {
+            DB::rollback();
+            return response()->json(['server busy'], 400);
+        }
+        DB::commit();
+
+        return response()->json(compact('user','token'), 201);
+    }
+
+    public function getAuthenticatedUser()
+        {
+            try {
+                    if (! $user = JWTAuth::parseToken()->authenticate()) {
+                            return response()->json(['user_not_found'], 404);
+                    }
+            } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+                    return response()->json(['token_expired'], $e->getStatusCode());
+            } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+                    return response()->json(['token_invalid'], $e->getStatusCode());
+            } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
+                    return response()->json(['token_absent'], $e->getStatusCode());
+            }
+            return response()->json(compact('user'));
+        }
 }

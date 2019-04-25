@@ -20,12 +20,10 @@ Route::get('/testing', function () {
 	return "hello world";
 });
 
-Route::group(['prefix' => 'api/v1','middleware'=>'api'], function() {
+Route::group(['prefix' => 'api/v1','middleware'=>'owner'], function() {
     Route::resource('user', 'UserController');
     Route::resource('owner', 'api\OwnerController')->except(['create', 'edit']);
-    // Route::resource('owner', 'api\OwnerController')->except(['create', 'edit'])->middleware('owner');
     Route::resource('items', 'api\ItemsController')->except(['create', 'edit']);
 });
-
-Route::post('/register', 'api\RegisterController@register');
-Route::post('/login', 'api\RegisterController@login');
+Route::post('register', 'api\OwnerController@register');
+Route::post('/login', 'api\OwnerController@authenticate');
