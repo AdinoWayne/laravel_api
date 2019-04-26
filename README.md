@@ -9,7 +9,7 @@ Install the dependencies and devDependencies and start the server.
 $ git clone https://github.com/AdinoWayne/laravel_api.git
 $ cd laravel_api
 $ docker run --rm -v $(pwd):/app composer install
-$ sudo chown -R $USER:$USER ~/laravel-app
+$ sudo chown -R $USER:$USER /laravel-api
 $ cp .env.example .env
 $ docker-compose up -d
 $ docker-compose exec app vim .env
@@ -23,7 +23,7 @@ DB_HOST=db
 DB_PORT=3306
 DB_DATABASE=root
 DB_USERNAME=adino
-DB_PASSWORD=adino
+DB_PASSWORD=123456
 
 Install docker when not found docker in this pc.
 
@@ -57,14 +57,37 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 ## 1.3 [OPTIONAL] Install docker-cleanup command
 
-```
+```sh
 cd /tmp
 git clone https://gist.github.com/76b450a0c986e576e98b.git
 cd 76b450a0c986e576e98b
 sudo mv docker-cleanup /usr/local/bin/docker-cleanup
 sudo chmod +x /usr/local/bin/docker-cleanup
+```
+1. Clear Application Cache.
 
+Run the following command to clear application cache of the Laravel application.
+```sh
+php artisan cache:clear
+```
+2. Clear route cache.
 
+To clear route cache of your Laravel application execute the following command from the shell.
+```sh
+php artisan route:cache 
+```
+3. Clear config cache.
+
+You can use config:cache to clear the config cache of the Laravel application.
+```sh
+php artisan config:cache  
+```
+4. Clear compiled view files.
+
+Also, you may need to clear compiled view files of your Laravel application. To clear compiled view files run the following command from the terminal.
+```sh
+php artisan view:clear 
+```
 
 
   
