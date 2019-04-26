@@ -12,18 +12,14 @@
 */
 // Auth::routes(['verify' => true]);
 
-Route::get('/', function () {	
-    return view('welcome');
-});
+Route::get('/', function () {return view('welcome');});
 
-Route::get('/testing', function () {
-	return "hello world";
-});
+Route::resource('api/v1/user', 'api\UserController');
 
 Route::group(['prefix' => 'api/v1','middleware'=>'owner'], function() {
-    Route::resource('user', 'UserController');
     Route::resource('owner', 'api\OwnerController')->except(['create', 'edit']);
     Route::resource('items', 'api\ItemsController')->except(['create', 'edit']);
 });
+
 Route::post('register', 'api\OwnerController@register');
 Route::post('/login', 'api\OwnerController@authenticate');

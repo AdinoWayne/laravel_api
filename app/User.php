@@ -41,6 +41,6 @@ class User extends Authenticatable
     ];
 
     public function user_log() {
-        return $this->hasOne('App\User_Log');
+        return $this->hasOne('App\Models\User_Log');
     }
 }

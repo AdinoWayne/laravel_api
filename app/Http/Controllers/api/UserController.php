@@ -1,18 +1,28 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api;
 
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\UserRequest;
+use App\Http\Controllers\api\BaseController;
+use App\Repositories\Interfaces\UserRepositoryInterface as UserRepository;
 
-class UserController extends Controller
+class UserController extends BaseController
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+    private $userRepository;
+
+    public function __construct(UserRepository $userRepository) {
+
+        $this->userRepository = $userRepository;
+    }
+
     public function index()
     {
        $output =  User::orderBy('id','DESC')->get();
@@ -35,30 +45,15 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        $input  = $request->all();
-
-        $this->validate($request,
-        [
-            'name' => 'required|min:3|max:100'
-        ],[
-            'name.required' => 'Field empty',
-            'name.min' => 'Field so short',
-            'name.max' => 'Field so long'
-        ]);
-
-        DB::beginTransaction();
-
         try {
-            $output = User::create($input);
-        } catch(\Throwable $e) {
-            DB::rollback();
-            return response()->json(['server busy'], 400);
+            $output = $this->userRepository->create($request->all());
+        } catch (\Exception $e) {
+            return $this->sendError('server busy', null);
         }
-        DB::commit();
 
-        return response()->json($output, 201);
+        return $this->sendResponse($output, 'items created successfully.');
     }
 
     /**

@@ -11,6 +11,6 @@ class UserLog extends Seeder
      */
     public function run()
     {
-        factory(App\User_Log::class, 10)->create();
+        factory(App\Models\User_Log::class, 10)->create();
     }
 }
