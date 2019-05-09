@@ -88,7 +88,11 @@ Also, you may need to clear compiled view files of your Laravel application. To 
 ```sh
 php artisan view:clear 
 ```
-
+check ip 
+```sh
+docker network inspect bridge
+docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq)
+```
 
   
 
